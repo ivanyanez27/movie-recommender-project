@@ -4,10 +4,11 @@ import numpy as np
 import pandas as pd
 from math import sqrt
 
+
 def main():
     # Read in dataset
-    movie_path = os.getcwd() + r'\ml-latest-small\movies.csv'
-    ratings_path = os.getcwd() + r'\ml-latest-small\ratings.csv'
+    movie_path = os.getcwd() + r'\ml-latest\movies.csv'
+    ratings_path = os.getcwd() + r'\ml-latest\ratings.csv'
     movies = pd.read_csv(movie_path, na_values='NA')
     ratings = pd.read_csv(ratings_path, na_values='NA')
 
@@ -79,8 +80,28 @@ def main():
     similar_df.index = range(len(similar_df))
 
     # Find the top-10 similar users
-    top_similar_users = similar_df.sort_values(by='similarity', ascending=False)[:10]
-    print(top_similar_users)
+    top_similar_users = similar_df.sort_values(by='similarity', ascending=False)[:100]
+
+    # Movies and ratings given by top similar users
+    top_similar_ratings = top_similar_users.merge(ratings, left_on='userId', right_on='userId', how='inner')
+
+    # Create weighted rating (similarity * ratings)
+    top_similar_ratings['weightedRating'] = top_similar_ratings['similarity'] * top_similar_ratings['rating']
+
+    # Compile the similarity and ratings of each movie
+    compiled_similarity_ratings = top_similar_ratings.groupby('movieId').sum()
+    compiled_similarity_ratings = compiled_similarity_ratings.drop(['userId', 'rating'], axis=1)
+
+    # Create recommendations dataframe and sort based on recommendation score
+    recommendations = pd.DataFrame(columns=['recommendation score'])
+    recommendations['recommendation score'] = compiled_similarity_ratings['weightedRating'] / \
+                                              compiled_similarity_ratings['similarity']
+    recommendations['movieId'] = compiled_similarity_ratings.index
+    recommendations = recommendations.sort_values(by='recommendation score', ascending=False)[:10]
+
+    # Top 10 movies recommendations
+    for movie_id in recommendations.index:
+        print(movies.loc[movies['movieId'] == movie_id].title)
 
 
 main()
