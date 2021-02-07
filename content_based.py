@@ -1,30 +1,77 @@
 import os
+import math
+import numpy as np
 import pandas as pd
 from itertools import combinations
+from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+
+# Recommend top 15 similar movies
+def movie_recommendations(similar_movies, movie_set, test_movie):
+    recommended = []
+    for movie in similar_movies:
+        if len(recommended) != 15:
+            movie_title = getMovieTitle(movie[0], movie_set, test_movie)
+
+            # If the movie is not the test movie
+            if movie_title != test_movie:
+                recommended.append(movie_title)
+
+        else:
+            break
+
+    for recommendation in recommended:
+        print(recommendation)
+
+# Include tags in the content based
+# def combined_features(row):
+# return row['keywords'] + " " + row['cast'] + " " + row['genres'] + " " + row['director']
+
+
+def getMovieIdx(title, movies):
+    a = movies[movies.title == title].index
+    b = a.values[0]
+    return b
+
+
+def getMovieTitle(index, movies, test_movie='N/A'):
+    movie = movies[movies.index == index].title.values[0]
+    return movie
 
 
 def main():
     # Read in dataset
     movie_path = os.getcwd() + r'\ml-latest-small\movies.csv'
     ratings_path = os.getcwd() + r'\ml-latest-small\ratings.csv'
-    tags_path = os.getcwd() + r'\ml-latest-small\tags.csv'
 
-    movies = pd.read_csv(movie_path, na_values='NA')[:5]
-    ratings = pd.read_csv(ratings_path, na_values='NA')[:5]
-    tags = pd.read_csv(tags_path, na_values='NA')[:5]
+    movies = pd.read_csv(movie_path, na_values='NaN')
+    ratings = pd.read_csv(ratings_path, na_values='NaN')
 
-    # Drop timestamp column
-    tags.drop(columns=['timestamp'], inplace=True)
+    # Remove years from movies title
+    movies['title'] = [x[:-7] for x in movies['title']]
 
-    # Create item feature vector using TFID
-    vectorizer = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), min_df=0, stop_words='english')
-    vectorizer.fit(tags['tag'])
-    #print(vectorizer.get_feature_names())
+    # Drop timestamp column and add index as a column
+    movies.dropna(subset=['genres'], inplace=True)
+    movies_ratings = pd.merge(ratings, movies, on='movieId')
+    movies_ratings.drop(columns=['timestamp'], inplace=True)
+    movies_ratings.dropna(subset=['genres'], inplace=True)
 
-    test_vect = [x for i in range(1, 4) for x in combinations(tags['tag'], r=i)]
+    # Tfid Vectorizer which will count the occurrence of genres in a movie
+    tf = TfidfVectorizer(analyzer=lambda s: (x for y in range(1, 4)
+                                             for x in combinations(s.split('|'), r=y)))
+    tfidf_matrix = tf.fit_transform(movies['genres'])
 
-    print(test_vect)
-    
+    # Get the similarity between movies using a cosine similarity metric
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+    # Test the recommendation
+    test_movie = "Iron Man 3"
+    movie_index = getMovieIdx(test_movie, movies)
+    similar_movies = list(enumerate(cosine_sim[movie_index]))
+    sorted_similar_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)
+
+    # Show the recommended movie
+    movie_recommendations(sorted_similar_movies, movies, test_movie)
+
 main()
