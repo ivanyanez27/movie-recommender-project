@@ -118,13 +118,12 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
-class RecommenderUser(models.Model):
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+class Movies(models.Model):
+    title = models.TextField()
 
     class Meta:
         managed = False
-        db_table = 'recommender_user'
+        db_table = 'movies'
 
 
 class User(models.Model):
@@ -132,6 +131,9 @@ class User(models.Model):
     user_name = models.CharField(max_length=20)
     user_password = models.CharField(max_length=20)
     user_email = models.CharField(unique=True, max_length=50)
+
+    #def __int__(self):
+     #   return self.user_id
 
     class Meta:
         managed = False
