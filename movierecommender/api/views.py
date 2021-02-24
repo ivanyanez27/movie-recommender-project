@@ -5,18 +5,22 @@ from .models import Movie, Rating
 from .serializers import MovieSerializer, RatingSerializer, UserSerializer
 from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
+# User view
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     authentication_classes = (TokenAuthentication,)
 
 
+# Movie view
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
     authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     @action(detail=True, methods=['POST'])
     def rate_movie(self, request, pk=None):
@@ -44,7 +48,19 @@ class MovieViewSet(viewsets.ModelViewSet):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
+# Rating view
 class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
     authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    # Override update method
+    def update(self, request, *args, **kwargs):
+        response = {'message': 'Ratings cannot be updated'}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+    # Override create method
+    def create(self, request, *args, **kwargs):
+        response = {'message': 'Ratings cannot be created'}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
