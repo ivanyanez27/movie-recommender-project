@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import MovieList from './components/movie-list';
 import MovieDetails from './components/movie-details';
+import MovieForm from './components/movie-form';
 
 function App() {
 
   // States
   const [movies, setMovie] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [editedMovie, setEditedMovie] = useState(null);
 
   // Get movies from the Django api
   useEffect(() => {
@@ -23,10 +25,15 @@ function App() {
     .then(resp => setMovie(resp))
     .catch(error => console.log(error))
   }, [])
-  
-  // When movie is clicked, set as selected movie
-  const movieClicked = movie => {
+
+  // Load the movie
+  const loadMovie = movie => {
     setSelectedMovie(movie);
+  }
+
+  // Edit the movie
+  const editClicked = movie => {
+    setEditedMovie(movie);
   }
 
   return (
@@ -35,9 +42,9 @@ function App() {
         <h1>Movie Recommender</h1>
       </header>
       <div className="layout">
-          <MovieList movies={movies} movieClicked={movieClicked}/>
-          <MovieDetails movie={selectedMovie}/>
-          <div>Movie details</div>
+          <MovieList movies={movies} movieClicked={loadMovie} editClicked={editClicked}/>
+          <MovieDetails movie={selectedMovie} updateMovie={loadMovie}/>
+          { editedMovie ? <MovieForm movie={editedMovie}/> : null}
         </div>
     </div>
   );
