@@ -11,15 +11,15 @@ class RecommenderBase:
     def __init__(self):
         self.movies = []
         self.ratings = []
-        self.userId = 1
+        self.userId = 2
         self.getData()
 
     # Get movie data
     def getData(self):
-        movie_path = os.getcwd() + r'\ml-latest-small\movies.csv'
-        ratings_path = os.getcwd() + r'\ml-latest-small\ratings.csv'
-        # movie_path = os.getcwd() + r'\dataset\movies.csv'
-        # ratings_path = os.getcwd() + r'\dataset\ratings.csv'
+        #movie_path = os.getcwd() + r'\ml-latest-small\movies.csv'
+        #ratings_path = os.getcwd() + r'\ml-latest-small\ratings.csv'
+        movie_path = os.getcwd() + r'\dataset\movies.csv'
+        ratings_path = os.getcwd() + r'\dataset\ratings.csv'
         self.movies = pd.read_csv(movie_path, na_values='NaN')
         self.ratings = pd.read_csv(ratings_path, na_values='NaN')
 
@@ -33,26 +33,16 @@ class CollaborativeFiltering(RecommenderBase):
 
     # Process the data
     def processData(self):
-        # Load in dataset
-        movie_path = os.getcwd() + r'\ml-latest-small\movies.csv'
-        ratings_path = os.getcwd() + r'\ml-latest-small\ratings.csv'
-        movies = pd.read_csv(movie_path, na_values='NA')
-        ratings = pd.read_csv(ratings_path, na_values='NA')
-
         # Create a year column and using the year from the title column
-        movies['year'] = movies['title'].str.extract('(\(\d\d\d\d\))', expand=False)
-        movies['year'] = movies['year'].str.extract('(\d\d\d\d)', expand=False)
+        self.movies['year'] = self.movies['title'].str.extract('(\(\d\d\d\d\))', expand=False)
+        self.movies['year'] = self.movies['year'].str.extract('(\d\d\d\d)', expand=False)
 
         # Drop genres from movies, and timestamp from ratings
-        movies.drop(columns=['genres'], inplace=True)
-        ratings.drop(columns=['timestamp'], inplace=True)
+        self.movies.drop(columns=['genres'], inplace=True)
+        self.ratings.drop(columns=['timestamp'], inplace=True)
 
         # Remove the years from movies title column
-        movies['title'] = [x[:-7] for x in movies['title']]
-
-        # Set movies and ratings
-        self.movies = movies
-        self.ratings = ratings
+        self.movies['title'] = [x[:-7] for x in self.movies['title']]
 
     # Get user and their previous ratings history
     def getUserHistory(self):
@@ -127,6 +117,7 @@ class CollaborativeFiltering(RecommenderBase):
         print("Recommended movies based on user's ratings with similar users:")
         for movie_id in recommendations['movieId']:
             print(self.movies.loc[self.movies['movieId'] == movie_id].title.to_string(header=False, index=False))
+        print("---------------------------------------------------------------------")
 
 
 # Content-Based Filtering Recommender
@@ -140,77 +131,51 @@ class ContentBasedFiltering(RecommenderBase):
 
     # Process the data
     def processData(self):
-        movie_path = os.getcwd() + r'\ml-latest-small\movies.csv'
-        ratings_path = os.getcwd() + r'\ml-latest-small\ratings.csv'
-
-        self.movies = pd.read_csv(movie_path, na_values='NaN')
-        self.ratings = pd.read_csv(ratings_path, na_values='NaN')
-
-        # Remove years from movies title
-        self.movies['title'] = [x[:-7] for x in self.movies['title']]
-
         # Drop timestamp column and add index as a column
         self.movies.dropna(subset=['genres'], inplace=True)
-        self.movies_ratings = pd.merge(self.ratings, self.movies, on='movieId')
-        self.movies_ratings.drop(columns=['timestamp'], inplace=True)
-        self.movies_ratings.dropna(subset=['genres'], inplace=True)
-
-    # Get movie id
-    def getMovieId(self, selected_title):
-        movie_details = self.movies[self.movies.title == selected_title].index
-        movie_id = movie_details.values[0]
-        return movie_id
-
-    # Get movie titles
-    def getMovieTitle(self, index):
-        movie = self.movies[self.movies.index == index].title.values[0]
-        return movie
 
     # Get user and their previous ratings history
-    def getUserHistory(self):
+    def getSimilarity(self):
         self.user_history = self.ratings[self.ratings.userId == self.userId]
-        self.user_history = self.user_history.drop(['userId', 'rating', 'timestamp'], axis=1)
-        movies_history = self.movies[self.movies['movieId'].isin(self.user_history['movieId'].tolist())]
-        self.getSimilarity(movies_history)
+        self.user_history = self.user_history.drop(['userId', 'rating'], axis=1)
+        self.user_history = pd.merge(self.user_history, self.movies, left_on='movieId', right_on='movieId', how='left')
 
-    # Train the model
-    def getSimilarity(self, movies_history):
         # Tfid Vectorizer which will count the occurrence of genres in a movie
         tf = TfidfVectorizer(analyzer=lambda s: (x for y in range(1, 4)
                                                  for x in combinations(s.split('|'), r=y)))
-        tfidf_matrix = tf.fit_transform(self.movies_history['genres'])
+        tfidf_matrix = tf.fit_transform(self.user_history['genres'])
 
         # Get the similarity between movies using a cosine similarity metric
         self.similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
-    # Recommend top n similar movies
+    # Recommend similar movies
     def recommend(self):
         total_recommendations = {}
         # Get recommendations for each title
         for selected in self.user_history.iterrows():
-            movie_idx = int(selected[1].to_string(header=False, index=False))
-            similar_movies = list(enumerate(self.similarities[movie_idx]))
+            selected_movie_idx = selected[0]
+            similar_movies = list(enumerate(self.similarities[selected_movie_idx]))
             sorted_similar_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)
 
             # Iterate through sorted recommendations for selected movie
-            for movie in sorted_similar_movies:
-                movie_title = self.getMovieTitle(movie[0])
+            for similar_movie in sorted_similar_movies:
+                movie_title = self.movies[self.movies.index == similar_movie[0]].title.values[0]
                 # If movie is not the selected movie and not in the total recommendations
-                if movie[0] != movie_idx and movie_title not in total_recommendations:
-                    total_recommendations[movie_title] = movie[1]
-                elif movie[0] != movie_idx and movie_title in total_recommendations:
-                    total_recommendations[movie_title] += movie[1]
+                if similar_movie[0] != selected_movie_idx and movie_title not in total_recommendations:
+                    total_recommendations[movie_title] = similar_movie[1]
+                elif similar_movie[0] != selected_movie_idx and movie_title in total_recommendations:
+                    total_recommendations[movie_title] += similar_movie[1]
                 else:
                     break
 
-        # Sort through the overall recommendations
-        sorted_recommendations = sorted(total_recommendations, key=lambda x: x[1], reverse=True)
-
         # Give out top 10 recommendations
+        sorted_recommendations = sorted(total_recommendations.items(), key=lambda item: item[1], reverse=True)[:10]
+        #common_ratings = user_movies[user_movies['movieId'].isin(similar_user_movies['movieId'].tolist())]
         print("---------------------------------------------------------------------")
-        print("Recommended movies based on previous interaction movies with similar users:")
-        for i in range(10):
-            print(sorted_recommendations[i])
+        print("Recommended movies based on previous interaction of movies:")
+        for movie in sorted_recommendations:
+            print(movie[0])
+        print("---------------------------------------------------------------------")
 
 
 class HybridRecommender:
@@ -219,30 +184,36 @@ class HybridRecommender:
         self.contentFilter = contentFilter()
         self.cachedResults = {}
 
+    def processDatasets(self):
+        self.collabFilter.processData()
+        self.contentFilter.processData()
+
     # Run collab filter processes
     def runCollaborativeFiltering(self):
-        self.collabFilter.processData()
         self.collabFilter.getUserHistory()
         self.collabFilter.getSimilarUsers()
 
     # Run content filter processes
     def runContentFiltering(self):
-        self.contentFilter.processData()
-        self.contentFilter.getUserHistory()
-        self.contentFilter.recommend()
+        self.contentFilter.getSimilarity()
 
     # Get recommendations
     def getResults(self):
         cbfResult = self.collabFilter.recommend()
         cnfResult = self.contentFilter.recommend()
 
-    def makeRecommendations(self):
-        pass
+    # HAPPY
+    # RUN
+    # TEST
+    def testRun(self):
+        self.processDatasets()
+        self.runCollaborativeFiltering()
+        self.runContentFiltering()
+        self.getResults()
 
 
 base = RecommenderBase()
 cbf = CollaborativeFiltering
 cnf = ContentBasedFiltering
 hybrid = HybridRecommender(cbf, cnf)
-hybrid.runContentFiltering()
-print('')
+hybrid.testRun()
