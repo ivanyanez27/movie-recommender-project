@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
-import {API} from '../api-service';
+import React, { useState, useEffect } from 'react';
+import { API } from '../api-service';
 
 function MovieForm(props) {
 
-    const [title, setTitle] = useState(props.movie.title);
-    const [description, setDescription] = useState(props.movie.description);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
     
+    // Change based on movie clicked
+    useEffect( () => {
+        setTitle(props.movie.title)
+        setDescription(props.movie.description)
+    }, [props.movie])
+
     const updateClicked = () => {
         API.updateMovie(props.movie.id, {title, description})
-        .then(resp => console.log(resp))
+        .then(resp => props.updatedMovie(resp))
+        .catch(error => console.log(error))
+    }
+
+    const createClicked = () => {
+        API.createMovie({title, description})
+        .then(resp => props.movieCreated(resp))
         .catch(error => console.log(error))
     }
 
@@ -24,7 +36,11 @@ function MovieForm(props) {
                     <textarea id="description" type="text" placeholder="Description" value={description}
                             onChange={event => setDescription(event.target.value)}
                     ></textarea><br/>
-                    <button onClick={updateClicked}>Update</button>
+                    { props.movie.id ?
+                        <button onClick={updateClicked}>Update</button> :
+                        <button onClick={createClicked}>Create</button>
+                    }
+
                 </div>
             ) : null }
         </React.Fragment>
