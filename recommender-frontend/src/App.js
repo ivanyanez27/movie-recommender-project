@@ -3,6 +3,7 @@ import './App.css';
 import MovieList from './components/movie-list';
 import MovieDetails from './components/movie-details';
 import MovieForm from './components/movie-form';
+import { useCookies } from 'react-cookie';
 
 function App() {
 
@@ -10,14 +11,15 @@ function App() {
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [editedMovie, setEditedMovie] = useState(null);
+  const [token] = useCookies(['mr-token']);
 
-  // Get movies from the Django api
+  // Get movies from the Django API
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/movies", {
       method: 'GET',
       headers:  {
         'Content-Type': 'application/json',
-        'Authorization': 'Token bc8c8f12d19841b9e3703624b61fb779756555e3'
+        'Authorization': `Token ${token['mr-token']}`
       }
     })
     // catch movies and store them in list 'movies'
@@ -25,6 +27,12 @@ function App() {
     .then(resp => setMovies(resp))
     .catch(error => console.log(error))
   }, [])
+
+  // Token check
+  useEffect(() => {
+      console.log(token);
+      if(!token['mr-token']) window.location.href = '/';
+  }, [token])
 
   // Load the movie
   const loadMovie = movie => {

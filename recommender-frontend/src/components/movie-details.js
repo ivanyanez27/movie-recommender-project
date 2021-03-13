@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { useCookies} from 'react-cookie';
 
 // Show movie details
 function MovieDetails(props){
 
     // Rating stars
     const [highlighted, setHighlighted] = useState(-1);
+    const [token] = useCookies(['mr-token']);
 
     // Movie object
     let mov = props.movie;
@@ -22,7 +24,7 @@ function MovieDetails(props){
             method: 'POST',
             headers:  {
                 'Content-Type': 'application/json',
-                'Authorization': 'Token bc8c8f12d19841b9e3703624b61fb779756555e3'
+                'Authorization': `Token ${token['mr-token']}`
             },
             body: JSON.stringify({stars: rate + 1})
         })
@@ -36,7 +38,7 @@ function MovieDetails(props){
             method: 'GET',
             headers:  {
                 'Content-Type': 'application/json',
-                'Authorization': 'Token bc8c8f12d19841b9e3703624b61fb779756555e3'
+                'Authorization': `Token ${token['mr-token']}`
             }
         })
         .then(resp => resp.json())
@@ -57,7 +59,7 @@ function MovieDetails(props){
                     <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 4 ? 'orange':''}/>
                     ({mov.no_of_ratings})
                     <div className='rate-container'>
-                        <h2>Rate it</h2>
+                        <h2>How would you rate {mov.title}?</h2>
                         {   [...Array(5)].map((e, i) => {
                             return <FontAwesomeIcon key={i} icon={faStar} className={highlighted > i - 1 ? 'purple':''}
                                     onMouseEnter={highlightRate(i)}
