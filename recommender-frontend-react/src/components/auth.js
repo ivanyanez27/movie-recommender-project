@@ -7,10 +7,10 @@ function Auth() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [token, setToken] = useCookies(['mr-token']);
-    const [isLoginView, setIsLoginView] = useState(true);
+    const [isLoginView, setIsLoginView] = useState(false);
 
-    // redirect
-    useEffect( () => {
+    // Redirect to movies tab if token is created
+    useEffect(() => {
         console.log(token);
         if(token['mr-token']) window.location.href = '/movies';
     }, [token])

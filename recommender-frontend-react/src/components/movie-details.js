@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { useCookies} from 'react-cookie';
+import '../App.css';
 
 // Show movie details
-function MovieDetails(props){
+function MovieDetails(props) {
 
     // Rating stars
     const [highlighted, setHighlighted] = useState(-1);
@@ -49,7 +50,7 @@ function MovieDetails(props){
     return (
         <React.Fragment>
             {mov ? (
-                <div>
+                <div className='movie-details'>
                     <h1>{mov.title}</h1> 
                     <p>{mov.description}</p>
                     <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 0 ? 'orange':''}/>

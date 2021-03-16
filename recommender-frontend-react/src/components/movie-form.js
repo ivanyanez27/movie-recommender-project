@@ -8,6 +8,9 @@ function MovieForm(props) {
     const [description, setDescription] = useState('');
     const [token] = useCookies(['mr-token']);
 
+    // Dev testing
+    const disable = title.length === 0 || description.length === 0;
+
     // Change based on movie clicked
     useEffect( () => {
         setTitle(props.movie.title)
@@ -39,8 +42,8 @@ function MovieForm(props) {
                             onChange={event => setDescription(event.target.value)}
                     ></textarea><br/>
                     { props.movie.id ?
-                        <button onClick={updateClicked}>Update</button> :
-                        <button onClick={createClicked}>Create</button>
+                        <button className="create-button" onClick={updateClicked} disabled={disable}>Update</button> :
+                        <button className="create-button" onClick={createClicked} disabled={disable}>Create</button>
                     }
 
                 </div>
