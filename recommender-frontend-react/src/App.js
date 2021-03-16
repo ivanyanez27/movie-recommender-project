@@ -7,6 +7,7 @@ import { useCookies } from 'react-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilm } from '@fortawesome/free-solid-svg-icons';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { useFetch } from './hooks/useFetch';
 
 function App() {
 
@@ -15,25 +16,15 @@ function App() {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [editedMovie, setEditedMovie] = useState(null);
   const [token, setToken, deleteToken] = useCookies(['mr-token']);
+  const [data, loading, error] = useFetch();
 
   // Get movies from the Django API
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/movies", {
-      method: 'GET',
-      headers:  {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token['mr-token']}`
-      }
-    })
-    // catch movies and store them in list 'movies'
-    .then(resp => resp.json())
-    .then(resp => setMovies(resp))
-    .catch(error => console.log(error))
-  }, [])
+    setMovies(data);
+  }, [data])
 
-  // Token check
+  // Return to authorization page if no t
   useEffect(() => {
-      console.log(token);
       if(!token['mr-token']) window.location.href = '/';
   }, [token])
 
@@ -82,6 +73,9 @@ function App() {
     deleteToken(['mr-token']);
   }
 
+  if(loading) return <h1>Loading...</h1>
+  if(error) return <h1>Error...</h1>
+
   return (
     <div className="App">
       <header className="App-header">
@@ -92,6 +86,7 @@ function App() {
         <FontAwesomeIcon icon={faSignOutAlt} onClick={logoutUser}/>
       </header>
       <div className="layout">
+          <MovieDetails movie={selectedMovie} updateMovie={loadMovie}/>
           <div>
             <MovieList 
               movies={movies} 
@@ -101,7 +96,6 @@ function App() {
             />
             <button onClick={ newMovie }>New movie</button>
           </div>
-          <MovieDetails movie={selectedMovie} updateMovie={loadMovie}/>
           { editedMovie ? 
           <MovieForm movie={editedMovie} updatedMovie={updatedMovie} movieCreated={movieCreated}/> 
           : null}

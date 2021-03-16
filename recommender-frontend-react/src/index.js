@@ -18,7 +18,7 @@ function Router() {
       </CookiesProvider>
     </React.StrictMode>
   )
-} 
+}
 
 ReactDOM.render(<Router />, document.getElementById('root'));
 
