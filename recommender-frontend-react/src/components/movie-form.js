@@ -31,7 +31,7 @@ function MovieForm(props) {
 
     return (
         <React.Fragment>
-            { props.movie ? (
+            {props.movie ? (
                 <div>
                     <label htmlFor="title">Title</label><br/>
                     <input id="title" type="text" placeholder="title" value={title}

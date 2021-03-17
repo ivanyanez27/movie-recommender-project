@@ -26,7 +26,7 @@ function MovieList(props){
     }
 
     return (
-        <div>
+        <div className='movie-list'>
             { props.movies && props.movies.map( movie => {
                 return (
                 <div key={movie.id} className='movie-item'>

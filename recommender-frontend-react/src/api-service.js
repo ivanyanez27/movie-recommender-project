@@ -7,7 +7,12 @@ export class API {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body)
-        }).then(resp => resp.json())
+        })
+        .then(resp => {
+            if (resp.ok) {
+                return resp.json();
+            }
+        })
     }
 
     static registerUser(body) {
@@ -17,7 +22,8 @@ export class API {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body)
-        }).then(resp => resp.json())
+        })
+        .then(resp => resp.json())
     }
 
     static updateMovie(mov_id, body, token) {

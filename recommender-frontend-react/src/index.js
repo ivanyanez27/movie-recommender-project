@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import Auth from './components/auth'
+import Auth from './components/auth';
+import Home from './components/home';
 import reportWebVitals from './reportWebVitals';
 import { Route, BrowserRouter } from 'react-router-dom';
 import { CookiesProvider} from 'react-cookie';
@@ -12,7 +13,8 @@ function Router() {
     <React.StrictMode>
       <CookiesProvider>
         <BrowserRouter>
-          <Route exact path="/" component={Auth} />
+          <Route exact path="/" component={Home} />
+          <Route exact path="/auth" component={Auth} />
           <Route exact path="/movies" component={App} />
         </BrowserRouter>
       </CookiesProvider>

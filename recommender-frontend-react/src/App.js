@@ -25,7 +25,7 @@ function App() {
 
   // Return to authorization page if no t
   useEffect(() => {
-      if(!token['mr-token']) window.location.href = '/';
+      if(!token['mr-token']) window.location.href = '/auth';
   }, [token])
 
   // Load the movie
