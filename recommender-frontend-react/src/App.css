@@ -131,17 +131,53 @@ h1 {
 }
 
 .home {
-  background-image: url("./images/endgame.png");
-  /* Set rules to fill background */
+  background: url("./images/home-background.jpg") no-repeat center center fixed; 
   min-height: 100%;
   min-width: 1024px;
-	
-  /* Set up proportionate scaling */
   width: 100%;
   height: auto;
-	
-  /* Set up positioning */
   position: fixed;
   top: 0;
   left: 0;
+  color: white;
+}
+
+header {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #FFD700;
+  text-align: center;
+}
+
+h2 {
+  text-transform: uppercase;
+  margin: 0;
+  font-size: 3rem;
+  white-space: nowrap;
+}
+
+p {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.button-home {
+  background-color: #FFD700; /* Green */
+  color: black;
+  border: none;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.button-home:hover {
+  background-color: black; /* Green */
+  color: #FFD700;
+  border: 2px solid #FFD700;
 }

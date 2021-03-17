@@ -16,10 +16,10 @@ class RecommenderBase:
 
     # Get movie data
     def getData(self):
-        #movie_path = os.getcwd() + r'\ml-latest-small\movies.csv'
-        #ratings_path = os.getcwd() + r'\ml-latest-small\ratings.csv'
-        movie_path = os.getcwd() + r'\dataset\movies.csv'
-        ratings_path = os.getcwd() + r'\dataset\ratings.csv'
+        movie_path = os.getcwd() + r'\ml-latest-small\movies.csv'
+        ratings_path = os.getcwd() + r'\ml-latest-small\ratings.csv'
+        #movie_path = os.getcwd() + r'\dataset\movies.csv'
+        #ratings_path = os.getcwd() + r'\dataset\ratings.csv'
         self.movies = pd.read_csv(movie_path, na_values='NaN')
         self.ratings = pd.read_csv(ratings_path, na_values='NaN')
 
