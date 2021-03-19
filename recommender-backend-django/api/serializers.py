@@ -1,20 +1,20 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from .models import Movie, Rating
+from .models import ApiMovie, ApiRating
 from django.contrib.auth.models import User
 
 
 # Movie Serializer
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Movie
+        model = ApiMovie
         fields = ('id', 'title', 'description', 'no_of_ratings', 'avg_rating')
 
 
 # Rating Serializer
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Rating
+        model = ApiRating
         fields = ('id', 'rating', 'user', 'movie')
 
 

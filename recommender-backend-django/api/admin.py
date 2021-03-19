@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Movie, Rating
+from .models import ApiMovie, ApiRating, AuthUser
 
-admin.site.register(Movie)
-admin.site.register(Rating)
+
+admin.site.register(ApiMovie)
+admin.site.register(ApiRating)
+admin.site.register(AuthUser)
