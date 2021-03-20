@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from .models import ApiMovie, ApiRating
+from .models import ApiMovie, ApiRating, ApiLink
 from django.contrib.auth.models import User
 
 
@@ -30,3 +30,10 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         token = Token.objects.create(user=user)
         return user
+
+
+# Links serializer
+class LinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApiLink
+        fields = ('tmdb_id', 'movie_id')

@@ -47,6 +47,15 @@ class ApiRating(models.Model):
         unique_together = (('user', 'movie'),)
 
 
+class ApiLink(models.Model):
+    tmdb_id = models.IntegerField(primary_key=True)
+    movie_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'api_tmdb'
+
+
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 

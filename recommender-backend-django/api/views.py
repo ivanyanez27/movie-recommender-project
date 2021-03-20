@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from .models import ApiMovie, ApiRating
-from .serializers import MovieSerializer, RatingSerializer, UserSerializer
+from .models import ApiMovie, ApiRating, ApiLink
+from .serializers import MovieSerializer, RatingSerializer, UserSerializer, LinkSerializer
 from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -64,3 +64,10 @@ class RatingViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         response = {'message': 'Ratings cannot be created'}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LinkViewSet(viewsets.ModelViewSet):
+    queryset = ApiLink.objects.all()
+    serializer_class = LinkSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
