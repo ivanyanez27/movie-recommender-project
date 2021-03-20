@@ -1,0 +1,3 @@
+var TMDB_KEY = 'b764723d043ad1be07986849a18c1e67';
+
+export var TMDB_KEY;

@@ -6,8 +6,8 @@ import MovieForm from './components/movie-form';
 import { useCookies } from 'react-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilm } from '@fortawesome/free-solid-svg-icons';
-import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { useFetch } from './hooks/useFetch';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 function App() {
 
@@ -17,13 +17,19 @@ function App() {
   const [editedMovie, setEditedMovie] = useState(null);
   const [token, setToken, deleteToken] = useCookies(['mr-token']);
   const [data, loading, error] = useFetch();
+  const [loadedMovies, setLoadedMovies] = useState(10);
 
   // Get movies from the Django API
   useEffect(() => {
-    setMovies(data);
+    setMovies(data.slice(0, 100));
+    console.log(data.slice(0, 100))
+    /* Testing data
+    data.slice(0, loadedMovies).map( movie => {
+      console.log(movie);
+    }) */
   }, [data])
 
-  // Return to authorization page if no t
+  // Return to authorization page if no token
   useEffect(() => {
       if(!token['mr-token']) window.location.href = '/auth';
   }, [token])
@@ -69,15 +75,54 @@ function App() {
     setMovies(newMovies);
   }
 
+  // Logout user
   const logoutUser = () => {
     deleteToken(['mr-token']);
+  }
+
+  const loadMoreMovies = () => {
+    setLoadedMovies(loadedMovies+10);
   }
 
   if(loading) return <h1>Loading...</h1>
   if(error) return <h1>Error...</h1>
 
   return (
-    <div className="App">
+    <div>
+      <div className="topnav">
+        <a className="app-title"><b><FontAwesomeIcon icon={faFilm}/> RECOMMOVIE</b></a>
+        <a className="tab" onClick={logoutUser}><b>LOGOUT</b></a>
+        <a className="tab"><b>RECOMMENDATIONS</b></a>
+        <a className="tab"><b>MOVIES</b></a>
+      </div>
+      <div className="app">
+          <div className="mDetails">
+            <MovieDetails movie={selectedMovie} updateMovie={loadMovie}/>
+          </div>
+          <div className="column-layout">
+            <InfiniteScroll
+                dataLength={movies.length}
+                next={loadMoreMovies}
+                hasMore={true}
+                scrollableTarget="scrollableDiv">
+              <MovieList 
+                movies={movies} 
+                movieClicked={loadMovie} 
+                editClicked={editClicked}
+                removeClicked={removeClicked}
+                nLoadedMovies={loadedMovies}
+              />
+            </InfiniteScroll>
+          </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+/*
+<div className="App">
       <header className="App-header">
         <h1>
           <FontAwesomeIcon icon={faFilm}/>
@@ -87,21 +132,30 @@ function App() {
       </header>
       <div className="layout">
           <MovieDetails movie={selectedMovie} updateMovie={loadMovie}/>
-          <div>
-            <MovieList 
-              movies={movies} 
-              movieClicked={loadMovie} 
-              editClicked={editClicked}
-              removeClicked={removeClicked}
-            />
-            <button onClick={ newMovie }>New movie</button>
+            <div className="column-layout">
+              <InfiniteScroll
+                dataLength={movies.length}
+                next={loadMoreMovies}
+                hasMore={true}
+                loader={<div>Loading...</div>}
+                scrollableTarget="scrollableDiv">
+              <MovieList 
+                movies={movies} 
+                movieClicked={loadMovie} 
+                editClicked={editClicked}
+                removeClicked={removeClicked}
+                nLoadedMovies={loadedMovies}
+              />
+              </InfiniteScroll>
+            </div>
+            { editedMovie ? 
+            <MovieForm 
+              movie={editedMovie} 
+              updatedMovie={updatedMovie} 
+              movieCreated={movieCreated}
+            /> 
+            : null}
           </div>
-          { editedMovie ? 
-          <MovieForm movie={editedMovie} updatedMovie={updatedMovie} movieCreated={movieCreated}/> 
-          : null}
-        </div>
+          <button onClick={loadMoreMovies}>Show more</button>
     </div>
-  );
-}
-
-export default App;
+*/

@@ -9,7 +9,8 @@ import { useCookies} from 'react-cookie';
 function MovieList(props){
 
     const [token] = useCookies(['mr-token']);
-    
+    let n = props.nLoadedMovies;
+
     // Allow onClick for each movie
     const movieClicked = movie => event => {
         props.movieClicked(movie)
@@ -27,12 +28,11 @@ function MovieList(props){
 
     return (
         <div className='movie-list'>
-            { props.movies && props.movies.map( movie => {
+            { props.movies && props.movies.slice(0, n).map( movie => {
                 return (
                 <div key={movie.id} className='movie-item'>
-                    <h2 onClick={movieClicked(movie)}>{movie.title}</h2>
-                    <FontAwesomeIcon icon={faEdit} onClick={() => editClicked(movie)}/>
-                    <FontAwesomeIcon icon={faTrash} onClick={() => removeClicked(movie)}/>
+                    <h3 onClick={movieClicked(movie)}>{movie.title}</h3>
+                    
                 </div>
                 )
             })}
@@ -41,3 +41,8 @@ function MovieList(props){
 }
 
 export default MovieList;
+
+/*
+<FontAwesomeIcon icon={faEdit} onClick={() => editClicked(movie)}/>
+                    <FontAwesomeIcon icon={faTrash} onClick={() => removeClicked(movie)}/>
+*/

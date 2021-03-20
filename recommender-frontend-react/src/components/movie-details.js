@@ -9,9 +9,10 @@ function MovieDetails(props) {
 
     // Rating stars
     const [highlighted, setHighlighted] = useState(-1);
+    const [tmdbMov, setTmdbMov] = useState([])
     const [token] = useCookies(['mr-token']);
 
-    // Movie object
+    // Selected movie object
     let mov = props.movie;
 
     // Set the highlight

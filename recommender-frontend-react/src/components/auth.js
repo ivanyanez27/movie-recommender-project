@@ -1,7 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { API } from '../api-service';
 import { useCookies } from 'react-cookie';
-import Alert from 'react-bootstrap/Alert';
 
 function Auth() {
 
@@ -42,10 +41,10 @@ function Auth() {
         }
 
     return (
-        <div className="App">
+        <div className="home">
             <div className='authentication-container'>
-                <header className="App-header">
-                    {isLoginView ? <h1>Login</h1>: <h1>Register</h1>}
+                <header className="auth-header">
+                    {isLoginView ? <h1 className="auth-h">Login</h1>: <h1 className="auth-h">Register</h1>}
                 </header>
                 { isFailedAuth === true ?
                     <div className='failure-container'><b>
