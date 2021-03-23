@@ -28,7 +28,7 @@ class MovieViewSet(viewsets.ModelViewSet):
             movie = ApiMovie.objects.get(id=pk)
             stars = request.data['stars']
             user = request.user
-
+            print(request)
             # if movie rating is created already
             try:
                 rating = ApiRating.objects.get(user=user.id, movie=movie.id)

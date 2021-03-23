@@ -37,3 +37,4 @@ class LinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApiLink
         fields = ('tmdb_id', 'movie_id')
+
