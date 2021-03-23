@@ -3,7 +3,7 @@ import {API} from '../api-service';
 import {useCookies} from 'react-cookie';
 
 // fetch data
-function useFetch() {
+function useFetchMovies() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState();
@@ -24,4 +24,4 @@ function useFetch() {
     return [data, loading, error]
 }
 
-export {useFetch};
+export {useFetchMovies};
