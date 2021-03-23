@@ -8,19 +8,23 @@ function Auth() {
     const [password, setPassword] = useState('');
     const [token, setToken] = useCookies(['mr-token']);
     const [isLoginView, setIsLoginView] = useState(true);
-    const [isFailedAuth, setIsFailedAuth] = useState(true);
+    const [isFailedAuth, setIsFailedAuth] = useState(false);
     const disableButton = username.length === 0 || password.length === 0;
 
     // Redirect to movies tab if token is created
     useEffect(() => {
-        if (token['mr-token']) window.location.href = '/movies';
+        if (token['mr-token']) {
+            window.location.href = '/movies';
+            //console.log(token);
+        }
     }, [token])
 
     // Login function   
     const loginClicked = () => {
         API.loginUser({username, password})
            .then(resp => {
-               // If token exists
+                // If token exists
+                console.log(resp)
                 if(resp) {
                     setToken('mr-token', resp.token)
                     setIsFailedAuth(false) 
@@ -76,3 +80,4 @@ function Auth() {
 }
 
 export default Auth;
+export var USER_ID = '';
