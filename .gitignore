@@ -244,8 +244,6 @@ sketch
 !**/migrations/__init__.py
 
 dataset
-knn-collaborative-filtering.py
-testing-notebook.ipynb
+recommender-scripts
 ml-latest-small
-test.py
-collaborative_filtering_class.py
+
