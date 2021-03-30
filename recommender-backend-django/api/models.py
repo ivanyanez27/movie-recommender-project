@@ -12,7 +12,6 @@ from django.contrib.auth.models import User
 
 class ApiMovie(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
     genre = models.CharField(max_length=100, blank=True, null=True)
 
     # Number of ratings
@@ -33,8 +32,19 @@ class ApiMovie(models.Model):
             return 0
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'api_movie'
+
+
+class ApiRecommender(models.Model):
+    user = models.ForeignKey(User, models.DO_NOTHING, default=0)
+    recommendations = models.ForeignKey(ApiMovie, models.DO_NOTHING, default=0)
+
+    class Meta:
+        managed = True
+        db_table = 'api_recommender'
+        index_together = (('user', 'recommendations'),)
+        unique_together = (('user', 'recommendations'),)
 
 
 class ApiRating(models.Model):
@@ -43,19 +53,10 @@ class ApiRating(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'api_rating'
         index_together = (('user', 'movie'),)
         unique_together = (('user', 'movie'),)
-
-
-class ApiLink(models.Model):
-    tmdb_id = models.IntegerField(primary_key=True)
-    movie_id = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'api_tmdb'
 
 
 class AuthGroup(models.Model):

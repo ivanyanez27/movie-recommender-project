@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'api',
-    'sequences.apps.SequencesConfig',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
