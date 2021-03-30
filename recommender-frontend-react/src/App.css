@@ -3,13 +3,18 @@
   width: 100%;
   background-color: #333;
   position: absolute;
-  overflow: hidden;
+  overflow: auto;
   text-align: center;
+}
+
+html {
+  overflow: hidden;
 }
 
 .topnav {
   background-color: #333;
   overflow: hidden;
+  border-bottom: 1px solid #FFD700;
 }
 
 .topnav a {
@@ -67,10 +72,13 @@
 
 .movie-item {
   display: grid;
+  color: white;
   grid-template-columns: 1fr auto auto;
   float: left;
-  width: 5%;
+  max-width: 10%;
   padding: 5% 7%;
+  margin: auto;
+  overflow: hidden;
 }
 
 
@@ -88,9 +96,11 @@
 
 input, textarea {
   width: 70%;
+  border-radius: 4px;
   padding: 10px;
   margin: 8px 0;
-  font-size: 0.8rem; 
+  font-size: 0.8rem;
+  box-shadow: none; 
 }
 
 .column-layout {
@@ -108,6 +118,7 @@ input, textarea {
 button {
   color: white;
   background-color: green;
+  border-radius: 4px;
   padding: 5px 10px;
   font-weight: bold;
   font-size: 0.8rem;
@@ -139,10 +150,28 @@ button:disabled {
   grid-row: 1;
   text-align: center;
   width: 100%;
+  
 }
 
-.mDetails {
-  padding: 5% 15%;
+.details-container {
+  padding: 1% 1%;
+  position: sticky;
+  top: 0;
+  background-color: #333;
+  border: 1px solid #FFD700;
+}
+
+.details-button {
+  background-color: #333;
+  border: 2px solid white;
+  border-radius: 8px;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
 }
 
 .movie-list {
@@ -166,9 +195,10 @@ button:disabled {
 
 .authentication-container {
   background-color: black;
-  margin: 5% 25%;
+  margin: 5% 30%;
+  border-radius: 12px;
   width: 35%;
-  height: 50%;
+  min-height: 100px;
   border: 3px solid #FFD700;
   padding: 10% 2%;
   overflow: hidden;
@@ -177,6 +207,7 @@ button:disabled {
 
 .home {
   background: url("./images/home-background.jpg") no-repeat center center fixed; 
+  background-size: cover;
   min-height: 100%;
   min-width: 1024px;
   width: 100%;

@@ -14,16 +14,6 @@ export class API {
         .then(resp => resp.json())
     } */
 
-    static tmdbId(body) {
-        return fetch(`http://127.0.0.1:8000/auth/`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body)
-        })
-    }
-
     static loginUser(body) {
         return fetch(`http://127.0.0.1:8000/auth/`, {
             method: 'POST',
@@ -50,6 +40,7 @@ export class API {
         .then(resp => resp.json())
     }
 
+    // Update movie details --INTENDED FOR STAFF
     static updateMovie(mov_id, body, token) {
         return fetch(`http://127.0.0.1:8000/api/movies/${mov_id}/`, {
             method: 'PUT',
@@ -61,6 +52,7 @@ export class API {
         }).then(resp => resp.json())
     }
 
+    // Create new movie --INTENDED FOR STAFF
     static createMovie(body, token) {
         return fetch(`http://127.0.0.1:8000/api/movies/`, {
             method: 'POST',
@@ -72,6 +64,7 @@ export class API {
         }).then(resp => resp.json())
     }
 
+    // Delete movies --INTENDED FOR STAFF
     static deleteMovie(mov_id, token) {
         return fetch(`http://127.0.0.1:8000/api/movies/${mov_id}/`, {
             method: 'DELETE',
@@ -82,6 +75,7 @@ export class API {
         })
     }
 
+    // fetch all the movies
     static getMovies(token) {
         return fetch("http://127.0.0.1:8000/api/movies", {
             method: 'GET',

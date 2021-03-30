@@ -1,5 +1,4 @@
 import React from 'react';
-import { useCookies} from 'react-cookie';
 
 // Show movie list
 function MovieList(props){

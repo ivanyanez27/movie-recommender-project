@@ -1,104 +1,102 @@
-import React, { useState, useEffect } from 'react'; 
+import React, {useState, useEffect} from 'react'; 
 import './App.css';
 import MovieList from './components/movie-list';
 import MovieDetails from './components/movie-details';
-import MovieForm from './components/movie-form';
-import { useCookies } from 'react-cookie';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilm } from '@fortawesome/free-solid-svg-icons';
-import { useFetch } from './hooks/useFetch';
+import {useCookies} from 'react-cookie';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faFilm} from '@fortawesome/free-solid-svg-icons';
+import {useFetchMovies} from './hooks/useFetchMovies';
 import InfiniteScroll from 'react-infinite-scroll-component';
+
 
 function App() {
 
   // States
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [editedMovie, setEditedMovie] = useState(null);
   const [token, setToken, deleteToken] = useCookies(['mr-token']);
-  const [data, loading, error] = useFetch();
-  const [loadedMovies, setLoadedMovies] = useState(10);
+  const [user, setUser, deleteUser] = useCookies(['uid']);
+  const [data, loading, error] = useFetchMovies();
+  const [loadedMovies, setLoadedMovies] = useState(100);
+  const [isDetails, setIsDetails] = useState(false)
+ 
 
   // Get movies from the Django API
   useEffect(() => {
     setMovies(data.slice(0, 100));
-    console.log(data.slice(0, 100))
-    /* Testing data
-    data.slice(0, loadedMovies).map( movie => {
-      console.log(movie);
-    }) */
+    //console.log(user.uid);
+    //getRecommendations()
+    //data.slice(0, loadedMovies).map( movie => {
+      //console.log(movie);
+    //})
   }, [data])
 
+  // Get user information
   // Return to authorization page if no token
   useEffect(() => {
       if(!token['mr-token']) window.location.href = '/auth';
   }, [token])
 
+  // Give ratings
+  const getRecommendations = () => {
+    fetch(`http://127.0.0.1:8000/api/recommender/${user.uid}/get_recommendations/`, {
+        method: 'GET',
+        headers:  {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token['mr-token']}`
+        }
+    })
+    .then(resp => console.log(resp))
+    .catch(error => console.log(error))
+}
+
   // Load the movie
   const loadMovie = movie => {
     setSelectedMovie(movie);
-    setEditedMovie(null);
-  }
-
-  // Edit the movie
-  const editClicked = movie => {
-    setEditedMovie(movie);
-    setSelectedMovie(null);
-  }
-
-  // Get updated updated movie array
-  const updatedMovie = movie => {
-    const newMovies = movies.map(mov => {
-      if (mov.id === movie.id) {
-        return movie;
-      }
-      return mov;
-    })
-    setMovies(newMovies)
-  }
-
-  // Add new movie
-  const newMovie = () => {
-    setEditedMovie({title: '', description: ''});
-    setSelectedMovie(null);
-  }
-
-  // Add new movie
-  const movieCreated = movie => {
-    const newMovies = [...movies, movie];
-    setMovies(newMovies);
-  }
-
-  // Remove movies
-  const removeClicked = movie => {
-    const newMovies = movies.filter( mov => mov.id !== movie.id);
-    setMovies(newMovies);
+    setIsDetails(true)
   }
 
   // Logout user
   const logoutUser = () => {
     deleteToken(['mr-token']);
+    deleteUser(['uid']);
   }
 
+  // Load more movies
   const loadMoreMovies = () => {
     setLoadedMovies(loadedMovies+10);
   }
 
-  if(loading) return <h1>Loading...</h1>
-  if(error) return <h1>Error...</h1>
+  // Load movie details 
+  const closeDetails = () => {
+    setIsDetails(false)
+  }
+
+  // Loading screen
+  if(loading) {
+    return <h1>Loading...</h1>
+  }
+  
+  // Error screen
+  if(error) {
+    return <h1>Error...</h1>
+  }
 
   return (
     <div>
       <div className="topnav">
         <a className="app-title"><b><FontAwesomeIcon icon={faFilm}/> RECOMMOVIE</b></a>
         <a className="tab" onClick={logoutUser}><b>LOGOUT</b></a>
-        <a className="tab"><b>RECOMMENDATIONS</b></a>
+        <a className="tab" onClick={getRecommendations}><b>RECOMMENDATIONS</b></a>
         <a className="tab"><b>MOVIES</b></a>
       </div>
       <div className="app">
-          <div className="mDetails">
-            <MovieDetails movie={selectedMovie} updateMovie={loadMovie}/>
-          </div>
+          { isDetails ?
+            <div className="details-container">
+              <MovieDetails movie={selectedMovie} updateMovie={loadMovie}/>
+              <br/>
+              <button className="details-button" onClick={closeDetails}>Close</button>
+            </div>: null}
           <div className="column-layout">
             <InfiniteScroll
                 dataLength={movies.length}
@@ -107,9 +105,7 @@ function App() {
                 scrollableTarget="scrollableDiv">
               <MovieList 
                 movies={movies} 
-                movieClicked={loadMovie} 
-                editClicked={editClicked}
-                removeClicked={removeClicked}
+                movieClicked={loadMovie}
                 nLoadedMovies={loadedMovies}
               />
             </InfiniteScroll>
@@ -120,42 +116,3 @@ function App() {
 }
 
 export default App;
-
-/*
-<div className="App">
-      <header className="App-header">
-        <h1>
-          <FontAwesomeIcon icon={faFilm}/>
-          <span> Movie Recommender</span>
-        </h1>
-        <FontAwesomeIcon icon={faSignOutAlt} onClick={logoutUser}/>
-      </header>
-      <div className="layout">
-          <MovieDetails movie={selectedMovie} updateMovie={loadMovie}/>
-            <div className="column-layout">
-              <InfiniteScroll
-                dataLength={movies.length}
-                next={loadMoreMovies}
-                hasMore={true}
-                loader={<div>Loading...</div>}
-                scrollableTarget="scrollableDiv">
-              <MovieList 
-                movies={movies} 
-                movieClicked={loadMovie} 
-                editClicked={editClicked}
-                removeClicked={removeClicked}
-                nLoadedMovies={loadedMovies}
-              />
-              </InfiniteScroll>
-            </div>
-            { editedMovie ? 
-            <MovieForm 
-              movie={editedMovie} 
-              updatedMovie={updatedMovie} 
-              movieCreated={movieCreated}
-            /> 
-            : null}
-          </div>
-          <button onClick={loadMoreMovies}>Show more</button>
-    </div>
-*/

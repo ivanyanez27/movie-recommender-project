@@ -15,8 +15,8 @@ function MovieDetails(props) {
     let mov = props.movie;
 
     // Set the highlight
-    const highlightRate = hlght => event => {
-        setHighlighted(hlght);
+    const highlightRate = highlght => () => {
+        setHighlighted(highlght);
     }
 
     // Give ratings
@@ -52,12 +52,12 @@ function MovieDetails(props) {
             {mov ? (
                 <div className='movie-details'>
                     <h1>{mov.title}</h1> 
-                    <p>{mov.description}</p> 
-                    <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 0 ? 'orange':''}/>
-                    <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 1 ? 'orange':''}/>
-                    <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 2 ? 'orange':''}/>
-                    <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 3 ? 'orange':''}/>
-                    <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 4 ? 'orange':''}/>
+                    <p>{mov.genre}</p> 
+                        <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 0 ? 'orange':''}/>
+                        <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 1 ? 'orange':''}/>
+                        <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 2 ? 'orange':''}/>
+                        <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 3 ? 'orange':''}/>
+                        <FontAwesomeIcon icon={faStar} className={mov.avg_rating > 4 ? 'orange':''}/>
                     ({mov.no_of_ratings})
                     <div className='rate-container'>
                         <h1>How would you rate "{mov.title}"?</h1>

@@ -7,6 +7,7 @@ function Auth() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [token, setToken] = useCookies(['mr-token']);
+    const [user, setUser] = useCookies(['uid']);
     const [isLoginView, setIsLoginView] = useState(true);
     const [isFailedAuth, setIsFailedAuth] = useState(false);
     const disableButton = username.length === 0 || password.length === 0;
@@ -15,7 +16,6 @@ function Auth() {
     useEffect(() => {
         if (token['mr-token']) {
             window.location.href = '/movies';
-            //console.log(token);
         }
     }, [token])
 
@@ -24,9 +24,9 @@ function Auth() {
         API.loginUser({username, password})
            .then(resp => {
                 // If token exists
-                console.log(resp)
                 if(resp) {
                     setToken('mr-token', resp.token)
+                    setUser('uid', resp.id)
                     setIsFailedAuth(false) 
                 }
                 // If token does not exist e.g. undefined
