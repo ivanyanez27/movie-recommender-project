@@ -35,5 +35,5 @@ class UserSerializer(serializers.ModelSerializer):
 class RecommenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApiRecommender
-        fields = ('user', 'recommendations')
+        fields = ('user', 'recommendations', 'title')
 

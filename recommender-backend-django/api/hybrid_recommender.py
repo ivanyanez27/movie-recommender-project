@@ -30,7 +30,6 @@ class RecommenderBase:
         rating_list = [float(x) for x in rating_list]
         rmovieId_list = list(ApiRating.objects.values_list('movie_id', flat=True))
         userId_list = list(ApiRating.objects.values_list('user_id', flat=True))
-        userId_list.reverse()
 
         rating_data = {'rating': rating_list,
                        'movieId': rmovieId_list,
@@ -59,7 +58,7 @@ class CollaborativeFiltering(RecommenderBase):
         # Drop movies with no year, get movies in the 2000s
         self.movies = self.movies[self.movies['year'].notna()]
         self.movies['year'] = self.movies['year'].astype(int)
-        self.movies = self.movies.loc[self.movies['year'] >= 2000]
+        self.movies = self.movies.loc[self.movies['year'] >= 1990]
 
         # Get user history
         self.user_history = self.ratings[self.ratings.userId == self.userId]
@@ -99,40 +98,42 @@ class CollaborativeFiltering(RecommenderBase):
         self.similar_users = pd.DataFrame.from_dict(grouped_similar_users, orient='index')
 
         # Rename column and adjust index
-        self.similar_users.columns = ['similarity']
-        self.similar_users['userId'] = self.similar_users.index
-        self.similar_users.index = range(len(self.similar_users))
+        if len(self.similar_users) > 0:
+            self.similar_users.columns = ['similarity']
+            self.similar_users['userId'] = self.similar_users.index
+            self.similar_users.index = range(len(self.similar_users))
 
     # Make recommendations to a user
     def recommend(self):
-        # Get the top-10 similar users
-        top_similar_users = self.similar_users.sort_values(by='similarity', ascending=False)[:10]
+        if len(self.similar_users) > 0:
+            # Get the top-10 similar users
+            top_similar_users = self.similar_users.sort_values(by='similarity', ascending=False)[:10]
 
-        # Movies and ratings given by top similar users
-        similar_ratings = top_similar_users.merge(self.ratings, left_on='userId', right_on='userId', how='inner')
+            # Movies and ratings given by top similar users
+            similar_ratings = top_similar_users.merge(self.ratings, left_on='userId', right_on='userId', how='inner')
 
-        # Create weighted rating (similarity * ratings)
-        similar_ratings['weightedRating'] = similar_ratings['similarity'] * similar_ratings['rating']
+            # Create weighted rating (similarity * ratings)
+            similar_ratings['weightedRating'] = similar_ratings['similarity'] * similar_ratings['rating']
 
-        # Compile the similarity and ratings of each movie
-        compiled_similarity = similar_ratings.groupby('movieId').sum()
-        compiled_similarity = compiled_similarity.drop(['userId', 'rating'], axis=1)
+            # Compile the similarity and ratings of each movie
+            compiled_similarity = similar_ratings.groupby('movieId').sum()
+            compiled_similarity = compiled_similarity.drop(['userId', 'rating'], axis=1)
 
-        # Create recommendations dataframe and sort based on recommendation score
-        recommendations = pd.DataFrame(columns=['recommendation score'])
-        recommendations['recommendation score'] = compiled_similarity['weightedRating'] / compiled_similarity[
-            'similarity']
-        recommendations['movieId'] = compiled_similarity.index
-        recommendations = recommendations.sort_values(by='recommendation score', ascending=False)
+            # Create recommendations dataframe and sort based on recommendation score
+            recommendations = pd.DataFrame(columns=['recommendation score'])
+            recommendations['recommendation score'] = compiled_similarity['weightedRating'] / compiled_similarity[
+                'similarity']
+            recommendations['movieId'] = compiled_similarity.index
+            recommendations = recommendations.sort_values(by='recommendation score', ascending=False)
 
-        # Top 10 movies recommendations
-        for movie_id in recommendations['movieId']:
-            movie = self.movies.loc[self.movies['movieId'] == movie_id].title.to_string(header=False, index=False)
-            if movie != 'Series([], )':
-                self.recommendations.append(movie_id)
-            # If there are no 10 recommendations
-            if len(self.recommendations) == 10:
-                break
+            # Top 10 movies recommendations
+            for movie_id in recommendations['movieId']:
+                movie = self.movies.loc[self.movies['movieId'] == movie_id].title.to_string(header=False, index=False)
+                if movie != 'Series([], )':
+                    self.recommendations.append(movie_id)
+                # If there are no 10 recommendations
+                if len(self.recommendations) == 10:
+                    break
 
 
 # Content-Based Filtering Recommender
@@ -148,17 +149,17 @@ class ContentBasedFiltering(RecommenderBase):
         # Drop genres rows that do not have genres
         self.movies = self.movies[self.movies['genre'] != '(no genres listed)']
 
-    # Get user and their previous ratings history
-    def getSimilarity(self):
+        # Get user history
         self.user_history = self.ratings[self.ratings.userId == self.userId]
         self.user_history = self.user_history.drop(['userId', 'rating'], axis=1)
         self.user_history = pd.merge(self.user_history, self.movies, left_on='movieId', right_on='movieId', how='left')
 
+    # Get user and their previous ratings history
+    def getSimilarity(self):
         # Tfid Vectorizer which will count the occurrence of genres in a movie
-        tf = TfidfVectorizer(analyzer=lambda s: (x for y in range(1, 4)
-                                                 for x in combinations(s.split('|'), r=y)))
-        tfidf_matrix = tf.fit_transform(self.user_history['genre'])
-
+        tf = TfidfVectorizer(analyzer=lambda genres: (i for j in range(1, 4)
+                                                           for i in combinations(genres.split('|'), r=j)))
+        tfidf_matrix = tf.fit_transform(self.user_history['genre'].tolist())
         # Get the similarity between movies using a cosine similarity metric
         self.similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
 

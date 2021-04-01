@@ -39,6 +39,7 @@ class ApiMovie(models.Model):
 class ApiRecommender(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING, default=0)
     recommendations = models.ForeignKey(ApiMovie, models.DO_NOTHING, default=0)
+    title = models.CharField(max_length=200)
 
     class Meta:
         managed = True

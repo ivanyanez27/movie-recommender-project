@@ -25,13 +25,29 @@ class RecommenderViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
 
     @action(detail=True, methods=['GET'])
+    def get_user_recommendations(self, request, pk=None):
+        # Get the users recommendations
+        user = request.user
+        recommendations = ApiRecommender.objects.filter(user=user.id)
+
+        # Get the id's of each movie
+        recommendation_ids = []
+        for obj in recommendations:
+            recommendation_ids.append(obj.recommendations_id)
+
+        # Query the user's movies and return the queryset
+        movies = ApiMovie.objects.filter(id__in=recommendation_ids)
+        serializer = MovieSerializer(movies, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['GET'])
     def get_recommendations(self, request, pk=None):
         # if 'id' in request.data:
         user = request.user
         recommendations = []
 
         # Get collaborative recommendations
-        cbf = CollaborativeFiltering(3)
+        cbf = CollaborativeFiltering(int(pk))
         cbf.processData()
         if len(cbf.user_history) > 0:
             cbf.getSimilarUsers()
@@ -39,24 +55,25 @@ class RecommenderViewSet(viewsets.ModelViewSet):
             recommendations += cbf.recommendations
 
         # Get content based recommendations
-        cnf = ContentBasedFiltering(3)
+        cnf = ContentBasedFiltering(int(pk))
         cnf.processData()
         if len(cnf.user_history) > 0:
             cnf.getSimilarity()
             cnf.recommend()
             recommendations += cnf.recommendations
 
-        # If recommendations already exist
         for movieId in recommendations:
             if len(recommendations) > 0:
+                # If recommendations does not exist
                 try:
                     movie = ApiMovie.objects.get(id=movieId)
-                    recommended = ApiRecommender.objects.create(user=user, recommendations=movie)
+                    recommended = ApiRecommender.objects.create(user=user, recommendations=movie, title=movie.title)
                     recommended.save()
                 except:
                     movie = ApiMovie.objects.get(id=movieId)
-                    recommended = ApiRecommender.objects.get(user=user.id, recommendations=movie)
+                    recommended = ApiRecommender.objects.get(user=int(pk), recommendations=movie)
                     recommended.recommendations = movie
+                    recommended.title = movie.title
                     recommended.save()
 
         response = {'message': 'Recommendations processed'}
