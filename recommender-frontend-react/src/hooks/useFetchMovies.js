@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 import {API} from '../api-service';
 import {useCookies} from 'react-cookie';
 
-// fetch data
+// fetch movies data
 function useFetchMovies() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);

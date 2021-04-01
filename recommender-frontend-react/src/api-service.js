@@ -1,19 +1,5 @@
-const TMDB_KEY = 'b764723d043ad1be07986849a18c1e67';
-
 // API service to fetch data
 export class API {
-    /*
-    static movieDetails(body, mov_id) {
-        return fetch(`https://api.themoviedb.org/3/movie/${mov_id}?api_key=${TMDB_KEY}&language=en-US`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body)
-        })
-        .then(resp => resp.json())
-    } */
-
     static loginUser(body) {
         return fetch(`http://127.0.0.1:8000/auth/`, {
             method: 'POST',
@@ -83,7 +69,7 @@ export class API {
               'Content-Type': 'application/json',
               'Authorization': `Token ${token['mr-token']}`
             }
-          })
-          .then(resp => resp.json())
+        })
+        .then(resp => resp.json())
     }
 }

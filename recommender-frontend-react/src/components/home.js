@@ -10,8 +10,8 @@ function Home() {
             <div className="home">
                 <header>
                         <h2>MOVIE RECOMMENDER SYSTEM</h2>                    
-                        <p className='yellow'>This project recommends you movies based on your ratings
-                            and your preferences</p><br/><br/>
+                        <p className='yellow'>This project recommends you movies based on your previous ratings
+                            and your movie preferences</p><br/><br/>
                         <button className="button-home" onClick={() => authForm()}>LOGIN / REGISTER</button>
                 </header>
             </div>

@@ -36,6 +36,14 @@ html {
   float: right;
   text-align: center;
   color: white;
+  margin: 10px 10px;
+}
+
+.topnav a.tab-selected {
+  float: right;
+  text-align: center;
+  color: purple;
+  margin: 10px 10px;
 }
 
 .topnav a.tab:hover {
@@ -76,11 +84,17 @@ html {
   grid-template-columns: 1fr auto auto;
   float: left;
   max-width: 10%;
-  padding: 5% 7%;
+  padding: 50px 50px;
   margin: auto;
   overflow: hidden;
 }
 
+h3 {
+  width: 100px;
+  height: 200px;
+  cursor: pointer;
+  padding: 0px 100px;
+}
 
 .movie-item:after {
   content: "";
@@ -92,6 +106,16 @@ html {
   width: 50%;
   margin: 0 25%;
 
+}
+
+.center {
+  margin: 10% 130%;
+  width: 50%;
+  height: 20%;
+  border: 3px solid #FFD700;
+  color: white;
+  padding: 10% 10%;
+  cursor: auto;
 }
 
 input, textarea {
