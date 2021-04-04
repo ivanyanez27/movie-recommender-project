@@ -243,7 +243,5 @@ sketch
 !**/migrations
 !**/migrations/__init__.py
 
-dataset
 recommender-scripts
-ml-latest-small
 
