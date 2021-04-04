@@ -111,7 +111,8 @@ class CollaborativeFiltering(RecommenderBase):
 
             # Movies and ratings given by top similar users
             similar_ratings = top_similar_users.merge(self.ratings, left_on='userId', right_on='userId', how='inner')
-
+            similar_ratings =  similar_ratings[~similar_ratings['movieId'].isin(self.user_history['movieId'])]
+            
             # Create weighted rating (similarity * ratings)
             similar_ratings['weightedRating'] = similar_ratings['similarity'] * similar_ratings['rating']
 
@@ -158,8 +159,9 @@ class ContentBasedFiltering(RecommenderBase):
     def getSimilarity(self):
         # Tfid Vectorizer which will count the occurrence of genres in a movie
         tf = TfidfVectorizer(analyzer=lambda genres: (i for j in range(1, 4)
-                                                           for i in combinations(genres.split('|'), r=j)))
+                                                           for i in combinations(genres.split(), r=j)))
         tfidf_matrix = tf.fit_transform(self.user_history['genre'].tolist())
+
         # Get the similarity between movies using a cosine similarity metric
         self.similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)
 

@@ -15,7 +15,9 @@ function Auth() {
     // Redirect to movies tab if token is created
     useEffect(() => {
         if (token['mr-token']) {
-            window.location.href = '/movies';
+            if (token['uid']) {
+                window.location.href = '/movies';
+            }
         }
     }, [token])
 

@@ -4,7 +4,7 @@ import MovieList from './components/movie-list';
 import MovieDetails from './components/movie-details';
 import {useCookies} from 'react-cookie';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faFilm, fas} from '@fortawesome/free-solid-svg-icons';
+import {faFilm} from '@fortawesome/free-solid-svg-icons';
 import {useFetchMovies} from './hooks/useFetchMovies';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
