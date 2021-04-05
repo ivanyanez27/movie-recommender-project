@@ -85,6 +85,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -95,6 +96,19 @@ DATABASES = {
         'POST': '5432',
     }
 }
+"""
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'ivanyanez',
+        'PASSWORD': 'password',
+        'HOST': '127.0.0.1',
+        'POST': '5432',
+    }
+}
+
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -141,11 +155,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+"""
 # AWS Setup
 AWS_ACCESS_KEY_ID = 'ASIAQXOQ36R3U4KOH2GA'
 AWS_SECRET_ACCESS_KEY = 'I3/fa/kD0cVBvBiSM9gui++zEtIM4S0UfuD8Cx4j'
 AWS_STORAGE_BUCKET_NAME = 'rec-project-bucket'
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
+"""
 
 
