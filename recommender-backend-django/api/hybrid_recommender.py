@@ -155,12 +155,12 @@ class ContentBasedFiltering(RecommenderBase):
         self.user_history = self.user_history.drop(['userId', 'rating'], axis=1)
         self.user_history = pd.merge(self.user_history, self.movies, left_on='movieId', right_on='movieId', how='left')
 
-    # Get user and their previous ratings history
+    # Get user and their similarity based on movies that they have rated
     def getSimilarity(self):
         # Tfid Vectorizer which will count the occurrence of genres in a movie
         tf = TfidfVectorizer(analyzer=lambda genres: (i for j in range(1, 4)
                                                            for i in combinations(genres.split(), r=j)))
-        tfidf_matrix = tf.fit_transform(self.user_history['genre'].tolist())
+        tfidf_matrix = tf.fit_transform(self.movies['genre'].tolist())
 
         # Get the similarity between movies using a cosine similarity metric
         self.similarities = cosine_similarity(tfidf_matrix, tfidf_matrix)

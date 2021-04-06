@@ -46,6 +46,9 @@ class RecommenderViewSet(viewsets.ModelViewSet):
         user = request.user
         recommendations = []
 
+        # Remove user's current recommendations, and create new ones
+        ApiRecommender.objects.filter(user=user.id).delete()
+
         # Get collaborative recommendations
         cbf = CollaborativeFiltering(int(pk))
         cbf.processData()
@@ -62,19 +65,12 @@ class RecommenderViewSet(viewsets.ModelViewSet):
             cnf.recommend()
             recommendations += cnf.recommendations
 
+        # Movies created and added to database
         for movieId in recommendations:
             if len(recommendations) > 0:
-                # If recommendations does not exist
-                try:
-                    movie = ApiMovie.objects.get(id=movieId)
-                    recommended = ApiRecommender.objects.create(user=user, recommendations=movie, title=movie.title)
-                    recommended.save()
-                except:
-                    movie = ApiMovie.objects.get(id=movieId)
-                    recommended = ApiRecommender.objects.get(user=int(pk), recommendations=movie)
-                    recommended.recommendations = movie
-                    recommended.title = movie.title
-                    recommended.save()
+                movie = ApiMovie.objects.get(id=movieId)
+                recommended = ApiRecommender.objects.create(user=user, recommendations=movie, title=movie.title)
+                recommended.save()
 
         response = {'message': 'Recommendations processed'}
         return Response(response, status=status.HTTP_200_OK)
