@@ -33,7 +33,6 @@ function App() {
       if(!token['mr-token']) window.location.href = '/auth';
   }, [token])
 
-  
   // Generate recommendations
   const generateRecommendations = () => {
     setIsRecommended(true);

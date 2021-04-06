@@ -1,5 +1,6 @@
 // API service to fetch data
 export class API {
+    // Login the user
     static loginUser(body) {
         return fetch(`http://127.0.0.1:8000/auth/`, {
             method: 'POST',
@@ -15,6 +16,7 @@ export class API {
         })
     }
 
+    // Register the user
     static registerUser(body) {
         return fetch(`http://127.0.0.1:8000/api/users/`, {
             method: 'POST',
@@ -22,6 +24,18 @@ export class API {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body)
+        })
+        .then(resp => resp.json())
+    }
+
+    // fetch all the movies
+    static getMovies(token) {
+        return fetch("http://127.0.0.1:8000/api/movies", {
+            method: 'GET',
+            headers:  {
+              'Content-Type': 'application/json',
+              'Authorization': `Token ${token['mr-token']}`
+            }
         })
         .then(resp => resp.json())
     }
@@ -35,7 +49,7 @@ export class API {
                 'Authorization': `Token ${token}`
             },
             body: JSON.stringify(body)
-        }).then(resp => resp.json())
+        })
     }
 
     // Create new movie --INTENDED FOR STAFF
@@ -47,7 +61,7 @@ export class API {
                 'Authorization': `Token ${token}`
             },
             body: JSON.stringify(body)
-        }).then(resp => resp.json())
+        })
     }
 
     // Delete movies --INTENDED FOR STAFF
@@ -59,17 +73,5 @@ export class API {
                 'Authorization': `Token ${token}`
             }
         })
-    }
-
-    // fetch all the movies
-    static getMovies(token) {
-        return fetch("http://127.0.0.1:8000/api/movies", {
-            method: 'GET',
-            headers:  {
-              'Content-Type': 'application/json',
-              'Authorization': `Token ${token['mr-token']}`
-            }
-        })
-        .then(resp => resp.json())
     }
 }

@@ -6,9 +6,8 @@ function MovieList(props){
     let movie_length = props.nMovies;
 
     // Allow onClick for each movie
-    const movieClicked = movie => event => {
+    const movieClicked = movie => () => {
         props.movieClicked(movie)
-        console.log(movie.id)
     }
 
     return (
