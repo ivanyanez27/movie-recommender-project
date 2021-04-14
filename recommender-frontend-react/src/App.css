@@ -83,7 +83,7 @@ html {
   color: white;
   grid-template-columns: 1fr auto auto;
   float: left;
-  max-width: 10%;
+  max-width: 15%;
   padding: 50px 50px;
   margin: auto;
   overflow: hidden;
