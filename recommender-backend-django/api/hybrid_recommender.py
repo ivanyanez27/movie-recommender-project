@@ -52,10 +52,10 @@ class CollaborativeFiltering(RecommenderBase):
         self.movies['year'] = self.movies['title'].str.extract('(\(\d\d\d\d\))', expand=False)
         self.movies['year'] = self.movies['year'].str.extract('(\d\d\d\d)', expand=False)
 
-        # Drop genres from movies, and timestamp from ratings
+        # Drop genres from movies
         self.movies.drop(columns=['genre'], inplace=True)
 
-        # Drop movies with no year, get movies in the 2000s
+        # Drop movies with no year, get movies in the year 1990s onwards
         self.movies = self.movies[self.movies['year'].notna()]
         self.movies['year'] = self.movies['year'].astype(int)
         self.movies = self.movies.loc[self.movies['year'] >= 1990]
@@ -80,6 +80,7 @@ class CollaborativeFiltering(RecommenderBase):
             # Sort movie id's of user and similar user's and make it the index
             users_history = self.user_history.sort_values(by='movieId')
             similar_users_history = similar_users_movies.sort_values(by='movieId')
+            
             # Get common user ratings relative to similar user
             common_history = users_history[users_history['movieId'].isin(similar_users_history['movieId'])]
 
@@ -90,7 +91,7 @@ class CollaborativeFiltering(RecommenderBase):
                 r_value = similarity[0]
                 p_value = similarity[1]
 
-                # if r_value is more than 0.7 and p_value <= 0.05 shows strong correlation
+                # if r_value is more than or equal to 0.7 and p_value <= 0.05 shows strong correlation
                 if r_value >= 0.7 and p_value <= 0.05:
                     grouped_similar_users[similar_users_id] = r_value
 
